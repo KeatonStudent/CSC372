@@ -1,0 +1,71 @@
+package agecalculator;
+
+import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.time.LocalDate;
+import java.time.Period;
+
+public class AgeCalculator {
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new AgeCalculator().createAndShowGUI();
+            }
+        });
+    }
+
+    public void createAndShowGUI() {
+        // Create the frame
+        JFrame frame = new JFrame("Age Calculator");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 200);
+
+        // Create a JPanel
+        JPanel panel = new JPanel();
+        frame.add(panel);
+        placeComponents(panel);
+
+        // Set the frame visibility
+        frame.setVisible(true);
+    }
+
+    private void placeComponents(JPanel panel) {
+        panel.setLayout(null);
+
+        // Create JLabel
+        JLabel birthDateLabel = new JLabel("Enter Birth Date (YYYY-MM-DD):");
+        birthDateLabel.setBounds(10, 20, 200, 25);
+        panel.add(birthDateLabel);
+
+        // Create JTextField
+        JTextField birthDateText = new JTextField(20);
+        birthDateText.setBounds(220, 20, 150, 25);
+        panel.add(birthDateText);
+
+        // Create JButton
+        JButton calculateButton = new JButton("Calculate Age");
+        calculateButton.setBounds(10, 60, 150, 25);
+        panel.add(calculateButton);
+
+        // Create JLabel for result
+        JLabel resultLabel = new JLabel("Your Age: ");
+        resultLabel.setBounds(10, 100, 300, 25);
+        panel.add(resultLabel);
+
+        // Add ActionListener to the button
+        calculateButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                String birthDateStr = birthDateText.getText();
+                try {
+                    LocalDate birthDate = LocalDate.parse(birthDateStr);
+                    LocalDate currentDate = LocalDate.now();
+                    int age = Period.between(birthDate, currentDate).getYears();
+                    resultLabel.setText("Your Age: " + age + " years");
+                } catch (Exception ex) {
+                    resultLabel.setText("Invalid date format. Please use YYYY-MM-DD.");
+                }
+            }
+        });
+    }
+}
