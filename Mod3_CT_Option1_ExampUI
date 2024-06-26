@@ -1,0 +1,125 @@
+package example.ui;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Random;
+
+public class UserInterface {
+    private JPanel mainPanel;
+
+    public static void main(String[] args) {
+        SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+                new UserInterface().createAndShowGUI();
+            }
+        });
+    }
+
+    public void createAndShowGUI() {
+        // Create the frame
+        JFrame frame = new JFrame("User Interface");
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(400, 300);
+
+        // Create a text area
+        JTextArea textArea = new JTextArea();
+        textArea.setFont(new Font("Arial", Font.PLAIN, 16));
+        textArea.setForeground(Color.BLUE);
+        textArea.setBorder(BorderFactory.createLineBorder(Color.GRAY, 2));
+
+        // Create a main panel and add the text area to it
+        mainPanel = new JPanel(new BorderLayout());
+        mainPanel.add(new JScrollPane(textArea), BorderLayout.CENTER);
+
+        // Create the menu bar
+        JMenuBar menuBar = new JMenuBar();
+        JMenu menu = new JMenu("Options");
+        menuBar.add(menu);
+
+        // Create and add menu items
+        JMenuItem menuItem1 = new JMenuItem("Show Date and Time");
+        JMenuItem menuItem2 = new JMenuItem("Save to File");
+        JMenuItem menuItem3 = new JMenuItem("Change Background Color");
+        JMenuItem menuItem4 = new JMenuItem("Exit");
+
+        menu.add(menuItem1);
+        menu.add(menuItem2);
+        menu.add(menuItem3);
+        menu.add(menuItem4);
+
+        frame.setJMenuBar(menuBar);
+
+        // Add action listeners for menu items
+        menuItem1.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                showDateTime(textArea);
+            }
+        });
+
+        menuItem2.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                saveToFile(textArea);
+            }
+        });
+
+        menuItem3.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                changeBackgroundColor(textArea);
+            }
+        });
+
+        menuItem4.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                System.exit(0);
+            }
+        });
+
+        // Add the main panel to the frame
+        frame.add(mainPanel);
+        // Set frame visibility
+        frame.setVisible(true);
+    }
+
+    private void showDateTime(JTextArea textArea) {
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        String formattedDateTime = now.format(formatter);
+        textArea.append("Date and Time: " + formattedDateTime + "\n");
+    }
+
+    private void saveToFile(JTextArea textArea) {
+        String content = textArea.getText();
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter("log.txt"))) {
+            writer.write(content);
+            writer.newLine();
+            writer.flush();
+            JOptionPane.showMessageDialog(null, "Content saved to log.txt");
+        } catch (IOException e) {
+            e.printStackTrace();
+            JOptionPane.showMessageDialog(null, "Failed to save content to log.txt");
+        }
+    }
+
+    private void changeBackgroundColor(JTextArea textArea) {
+        Color randomGreen = generateRandomGreenColor();
+        mainPanel.setBackground(randomGreen);
+        mainPanel.repaint(); // Ensure the panel repaints with the new color
+        textArea.append("Background Color Changed to: " + randomGreen.toString() + "\n");
+    }
+
+    private Color generateRandomGreenColor() {
+        Random rand = new Random();
+        // Green hues range roughly from 85/360 to 160/360 in HSB
+        float hue = 85f / 360f + (rand.nextFloat() * ((160f / 360f) - (85f / 360f)));
+        float saturation = 0.5f + 0.5f * rand.nextFloat(); // Saturation between 0.5 and 1.0
+        float brightness = 0.5f + 0.5f * rand.nextFloat(); // Brightness between 0.5 and 1.0
+        return Color.getHSBColor(hue, saturation, brightness);
+    }
+}
