@@ -1,0 +1,72 @@
+package com.vehicle;
+
+import java.util.LinkedList;
+import java.util.Scanner;
+import java.util.Collections;
+import java.util.Comparator;
+import java.io.FileWriter;
+import java.io.IOException;
+
+public class VehicleDataEntry {
+    public static void main(String[] args) {
+        LinkedList<Vehicle> vehicles = new LinkedList<>();
+        Scanner scanner = new Scanner(System.in);
+        String input;
+
+        do {
+            System.out.print("Enter vehicle make: ");
+            String make = scanner.nextLine();
+            System.out.print("Enter vehicle model: ");
+            String model = scanner.nextLine();
+
+            double milesPerGallon = 0;
+            boolean valid = false;
+            while (!valid) {
+                try {
+                    System.out.print("Enter miles per gallon: ");
+                    milesPerGallon = Double.parseDouble(scanner.nextLine());
+                    if (milesPerGallon > 0) {
+                        valid = true;
+                    } else {
+                        System.out.println("Please enter a positive number for miles per gallon.");
+                    }
+                } catch (NumberFormatException e) {
+                    System.out.println("Invalid input. Please enter a numeric value for miles per gallon.");
+                }
+            }
+
+            vehicles.add(new Vehicle(make, model, milesPerGallon));
+
+            System.out.print("Do you want to enter another vehicle? (yes/no): ");
+            input = scanner.nextLine();
+        } while (input.equalsIgnoreCase("yes"));
+
+        scanner.close();
+
+        // Print the list before sorting
+        System.out.println("Vehicles before sorting:");
+        for (Vehicle vehicle : vehicles) {
+            System.out.println(vehicle);
+        }
+
+        // Sort vehicles by miles per gallon in ascending order
+        Collections.sort(vehicles, Comparator.comparingDouble(Vehicle::getMilesPerGallon));
+
+        // Print the list after sorting
+        System.out.println("Vehicles after sorting:");
+        for (Vehicle vehicle : vehicles) {
+            System.out.println(vehicle);
+        }
+
+        // Output to a text file
+        try (FileWriter writer = new FileWriter("vehicles.txt")) {
+            for (Vehicle vehicle : vehicles) {
+                writer.write(vehicle.toString() + "\n");
+            }
+            System.out.println("Vehicle data has been written to vehicles.txt");
+        } catch (IOException e) {
+            System.out.println("An error occurred while writing to the file.");
+            e.printStackTrace();
+        }
+    }
+}
